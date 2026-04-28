@@ -1,15 +1,23 @@
 import React from 'react';
 import { TrendingUp, TrendingDown, Minus, Activity } from 'lucide-react';
-import { mockStocks } from '../lib/mockData';
 import { formatINR, formatVolume, cn } from '../lib/utils';
 import { Stock } from '../types';
+import { useMarketData } from '../lib/MarketContext';
 
 export function Screener() {
+  const { stocks } = useMarketData();
+
   return (
     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex justify-between items-center">
         <div>
-          <h2 className="text-2xl font-semibold text-slate-100 tracking-tight">Market Screener</h2>
+          <h2 className="text-2xl font-semibold text-slate-100 tracking-tight flex items-center">
+            Market Screener
+             <span className="ml-3 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+                 LIVE
+             </span>
+          </h2>
           <p className="text-sm text-slate-400 mt-1">Live tracking of active Indian equities based on volume, trend, and fundamentals.</p>
         </div>
         <div className="flex space-x-2">
@@ -37,24 +45,28 @@ export function Screener() {
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-800">
-              {mockStocks.map((stock: Stock) => (
+              {stocks.map((stock: Stock) => (
                 <tr key={stock.id} className="hover:bg-slate-800/40 transition-colors group">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="font-semibold text-slate-100">{stock.symbol}</div>
                     <div className="text-xs text-slate-500 truncate max-w-[200px]">{stock.name}</div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right font-medium text-slate-200">
-                    {formatINR(stock.price)}
+                    <span className="relative inline-block">
+               		    {formatINR(stock.price)}
+               		     {/* Super subtle background ping for updates */}
+               		     <span key={stock.price} className="absolute inset-0 bg-indigo-500/10 animate-ping rounded mix-blend-screen pointer-events-none" style={{ animationDuration: '1s', animationIterationCount: 1 }}></span>
+               		</span>
                   </td>
                   <td className={cn(
                     "px-6 py-4 whitespace-nowrap text-right font-medium",
-                    stock.change >= 0 ? "text-emerald-400" : "text-rose-400"
+                    stock.changePercent >= 0 ? "text-emerald-400" : "text-rose-400"
                   )}>
-                    {stock.change >= 0 ? '+' : ''}{stock.changePercent.toFixed(2)}%
+                    {stock.changePercent >= 0 ? '+' : ''}{(stock.changePercent || 0).toFixed(2)}%
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-slate-300">
                     {formatVolume(stock.volume)}
-                    {stock.volume > stock.avgVolume * 2 && (
+                    {stock.volume > stock.avgVolume * 2 && stock.avgVolume > 0 && (
                        <span className="ml-2 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-500/10 text-indigo-400 border border-indigo-500/20" title="High Volume Spike">H</span>
                     )}
                   </td>
@@ -62,7 +74,7 @@ export function Screener() {
                     {formatVolume(stock.marketCap)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-right text-slate-300">
-                    {stock.peRatio.toFixed(1)}
+                    {(stock.peRatio || 0).toFixed(1)}
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-center">
                     <div className="flex justify-center items-center">
