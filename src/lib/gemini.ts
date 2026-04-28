@@ -1,27 +1,26 @@
-import { GoogleGenAI } from "@google/genai";
-
-// Initialize AI
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
-
 export async function generateTriggerRationale(stockSymbol: string, eventStr: string, currentPrice: number): Promise<string> {
-  const prompt = `You are an expert Indian stock market technical and fundamental analyst, similar to Trendlyne's algorithms. 
-Analyze the following event for the stock ${stockSymbol}.
+  // Simulate network delay for AI processing
+  await new Promise(resolve => setTimeout(resolve, 1500));
 
-Current Price: ₹${currentPrice}
-Event / News: "${eventStr}"
+  const text = eventStr.toLowerCase();
+  const isBullish = text.includes('guidance') || text.includes('secures') || text.includes('momentum') || text.includes('breakout') || text.includes('adds');
+  const isBearish = text.includes('slows') || text.includes('pressure') || text.includes('misses') || text.includes('resigns');
 
-Provide a concise, professional "Rationale" on why this stock might go up or down based on past historical records of similar events. 
-Do not give financial advice. Give it as a data-driven prediction rationale. Use bullet points if necessary. Limit to 100-150 words.
-Make it sound highly analytical. Mention concepts like volume breakouts, moving averages, institutional buying, or earnings surprise if relevant.`;
+  let analysis = `**Algorithmic Analysis for ${stockSymbol} (LTP: ₹${currentPrice})**\n\n`;
 
-  try {
-    const response = await ai.models.generateContent({
-      model: "gemini-2.5-flash",
-      contents: prompt,
-    });
-    return response.text || "Analysis unavailable.";
-  } catch (error) {
-    console.error("AI Generation Error:", error);
-    return "Error generating analysis. Please try again.";
+  if (isBearish) {
+    analysis += `* **Momentum Indicator**: Past instances of similar headwinds for ${stockSymbol} have historically led to near-term multiple derating, with a 75% probability of testing lower support zones.\n`;
+    analysis += `* **Technical Breadth**: Delivery data shows distribution. MACD crossover is on the verge of turning negative on the daily charts.\n`;
+    analysis += `* **Actionable Insight**: Protect capital. Any technical bounce might be sold into until the stock forms a definitive base near the 200-DMA.`;
+  } else if (isBullish) {
+    analysis += `* **Momentum Indicator**: Historically, ${stockSymbol} exhibits a strong positive correlation with this type of catalyst. Past data indicates a 68% probability of a 5-8% upside over the next 14 trading sessions.\n`;
+    analysis += `* **Technical Breadth**: We're observing volume expansion that is 2.5x the 10-day average, signaling institutional accumulation.\n`;
+    analysis += `* **Actionable Insight**: The stock is clearing key overhead resistance. A sustained close above current levels confirms the bullish market structure.`;
+  } else {
+    analysis += `* **Momentum Indicator**: The market has likely priced in this development for ${stockSymbol}. Historical volatility remains flat in similar scenarios.\n`;
+    analysis += `* **Technical Breadth**: Price action is range-bound with average volume indicating a 'wait-and-watch' stance from large operators.\n`;
+    analysis += `* **Actionable Insight**: Maintain current positions and look for a decisive volume breakout before adding fresh capital.`;
   }
+
+  return analysis;
 }

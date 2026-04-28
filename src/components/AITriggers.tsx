@@ -3,7 +3,6 @@ import { mockEvents, mockStocks } from '../lib/mockData';
 import { generateTriggerRationale } from '../lib/gemini';
 import { Sparkles, ArrowRight, Activity, TrendingUp, TrendingDown, RefreshCcw } from 'lucide-react';
 import { cn } from '../lib/utils';
-import ReactMarkdown from 'react-markdown';
 
 export function AITriggers() {
   const [selectedEventId, setSelectedEventId] = useState<string | null>(null);
@@ -101,8 +100,8 @@ export function AITriggers() {
                         Analyzing historical models...
                       </div>
                     ) : (
-                      <div className="text-sm text-slate-300 leading-relaxed markdown-body">
-                         <ReactMarkdown>{rationaleInfo.text}</ReactMarkdown>
+                      <div className="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap">
+                         {rationaleInfo.text}
                       </div>
                     )}
                   </div>
