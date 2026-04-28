@@ -11,7 +11,18 @@ const MarketDataContext = createContext<MarketDataState>({ stocks: [], liveEvent
 
 export function MarketDataProvider({ children }: { children: React.ReactNode }) {
   const [stocks, setStocks] = useState<Stock[]>(mockStocks);
-  const [liveEvents, setLiveEvents] = useState<any[]>(mockEvents.map(e => ({...e, isLive: false})));
+  const [liveEvents, setLiveEvents] = useState<any[]>(mockEvents.map(e => {
+    const stock = mockStocks.find(s => s.symbol === e.symbol);
+    const price = stock ? stock.price : 1000;
+    const isBullish = e.impact === 'Positive';
+    return {
+      ...e,
+      isLive: false,
+      price,
+      target: isBullish ? price * 1.04 : price * 0.97,
+      stopLoss: isBullish ? price * 0.985 : price * 1.015
+    };
+  }));
 
   useEffect(() => {
     // Highly realistic simulator since we cannot fetch real Yahoo Finance data over CORS on Github Pages
