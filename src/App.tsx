@@ -5,6 +5,7 @@ import { Screener } from './components/Screener';
 import { SuperstarPortfolios } from './components/SuperstarPortfolios';
 import { AITriggers } from './components/AITriggers';
 import { useMarketData } from './lib/MarketContext';
+import { TickerTape } from 'react-ts-tradingview-widgets';
 
 type Tab = 'screener' | 'ai-triggers' | 'superstars';
 
@@ -82,22 +83,27 @@ export default function App() {
       {/* Main Content */}
       <main className="flex-1 flex flex-col min-h-screen relative overflow-hidden">
         {/* Top Header */}
-        <header className="h-16 px-8 flex items-center justify-between border-b border-slate-800/60 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full">
-          <div className="flex items-center text-slate-400">
-            <Menu className="w-5 h-5 md:hidden mr-4 cursor-pointer" />
-            <div className="hidden md:flex items-center space-x-2 text-sm font-medium">
-              <span>Nifty 50</span>
-              <span className={cn("transition-colors", avgChangePercent >= 0 ? "text-emerald-400" : "text-rose-400")}>
-                {simulatedNiftyLTP.toFixed(2)}
-              </span>
-              <span className={cn("text-xs px-1.5 py-0.5 rounded border", 
-                avgChangePercent >= 0 ? "text-emerald-400/80 bg-emerald-400/10 border-emerald-400/20" : "text-rose-400/80 bg-rose-400/10 border-rose-400/20"
-              )}>
-                {avgChangePercent >= 0 ? '+' : ''}{avgChangePercent.toFixed(2)}%
-              </span>
+        <header className="h-16 px-8 flex items-center justify-between border-b border-slate-800/60 bg-slate-900/50 backdrop-blur-md sticky top-0 z-10 w-full overflow-hidden">
+          <div className="flex items-center text-slate-400 flex-1 min-w-0 mr-4">
+            <Menu className="w-5 h-5 md:hidden mr-4 cursor-pointer flex-shrink-0" />
+            <div className="hidden md:block w-full">
+              <TickerTape 
+                colorTheme="dark" 
+                symbols={[
+                  { proName: "BSE:SENSEX", title: "Sensex" },
+                  { proName: "NSE:NIFTY", title: "Nifty 50" },
+                  { proName: "NSE:RELIANCE", title: "Reliance" },
+                  { proName: "NSE:TCS", title: "TCS" },
+                  { proName: "NSE:HDFCBANK", title: "HDFC Bank" },
+                  { proName: "NSE:INFY", title: "Infosys" },
+                  { proName: "BSE:ZOMATO", title: "Zomato" }
+                ]} 
+                isTransparent 
+                displayMode="regular" 
+              />
             </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-4 flex-shrink-0">
              <div className="relative group hidden sm:block">
                <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 group-focus-within:text-indigo-400 transition-colors" />
                <input 
