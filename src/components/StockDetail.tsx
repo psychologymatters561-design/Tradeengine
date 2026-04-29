@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { ArrowLeft, Target, AlertTriangle, Zap } from 'lucide-react';
-import { AdvancedRealTimeChart, Timeline, SymbolInfo, FundamentalData, CompanyProfile } from 'react-ts-tradingview-widgets';
+import { ArrowLeft, Target, AlertTriangle, Zap, Activity } from 'lucide-react';
 import { generateTriggerRationale } from '../lib/gemini';
+import Markdown from 'react-markdown';
 
 export function StockDetail({ symbol, onBack }: { symbol: string, onBack: () => void }) {
   const [aiRationale, setAiRationale] = useState<{ loading: boolean, text: string }>({ loading: true, text: '' });
@@ -22,35 +22,22 @@ export function StockDetail({ symbol, onBack }: { symbol: string, onBack: () => 
 
   return (
     <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
-      <button 
-        onClick={onBack} 
-        className="flex items-center text-sm font-medium text-slate-400 hover:text-white transition-colors bg-slate-900/50 hover:bg-slate-800 px-4 py-2 rounded-full border border-slate-800 w-fit"
-      >
-        <ArrowLeft className="w-4 h-4 mr-2" /> Back to AI Dashboard
-      </button>
-
-      <div className="border border-slate-800 rounded-xl overflow-hidden bg-slate-900/80 shadow-xl p-1">
-         <SymbolInfo symbol={symbol} colorTheme="dark" isTransparent width="100%" />
+      <div className="flex items-center justify-between">
+        <button 
+          onClick={onBack} 
+          className="flex items-center text-sm font-medium text-slate-400 hover:text-white transition-colors bg-slate-900/50 hover:bg-slate-800 px-4 py-2 rounded-full border border-slate-800 w-fit"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" /> Back to AI Dashboard
+        </button>
+        <h2 className="text-2xl font-bold text-slate-100">{symbol}</h2>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6 flex flex-col">
-          <div className="h-[600px] border border-slate-800 rounded-xl overflow-hidden shadow-xl bg-slate-900/50">
-            <AdvancedRealTimeChart 
-              theme="dark" 
-              symbol={symbol} 
-              width="100%" 
-              height="100%" 
-              hide_side_toolbar={false}
-              allow_symbol_change={false}
-              interval="15"
-              timezone="Asia/Kolkata"
-            />
-          </div>
-          
-          <div className="border border-slate-800 rounded-xl overflow-hidden shadow-xl bg-slate-900/50 flex-1 min-h-[300px]">
-             {/* @ts-ignore */}
-             <FundamentalData symbol={symbol} colorTheme="dark" width="100%" height="100%" isTransparent displayMode="regular" />
+          <div className="h-[600px] border border-slate-800 rounded-xl overflow-hidden shadow-xl bg-slate-900/50 flex flex-col items-center justify-center p-8 text-center relative">
+            <Activity className="w-16 h-16 text-slate-700 mb-4" />
+            <h3 className="text-xl font-bold text-slate-300 mb-2">Live Market Chart</h3>
+            <p className="text-slate-500 max-w-md">The Advanced Charting interface relies on third-party scripts that are currently restricted in this sandbox environment. Check terminal or connect via API directly.</p>
           </div>
         </div>
 
@@ -67,7 +54,9 @@ export function StockDetail({ symbol, onBack }: { symbol: string, onBack: () => 
                 {aiRationale.loading ? (
                    <span className="flex items-center text-slate-400 animate-pulse"><span className="w-2 h-2 rounded-full bg-indigo-500 mr-2"></span> Analyzing live momentum & volume profile...</span>
                 ) : (
-                   <div className="whitespace-pre-wrap">{aiRationale.text.substring(0, 300)}...</div>
+                   <div className="prose prose-invert prose-sm max-w-none text-slate-300">
+                     <Markdown>{aiRationale.text}</Markdown>
+                   </div>
                 )}
               </div>
               <div className="bg-slate-900 rounded-xl p-4 border border-slate-800/80 shadow-inner space-y-3">
@@ -86,16 +75,6 @@ export function StockDetail({ symbol, onBack }: { symbol: string, onBack: () => 
                    <span className="font-bold text-rose-400 border border-rose-500/20 bg-rose-500/10 px-2 py-0.5 rounded">-1.0%</span>
                  </div>
               </div>
-            </div>
-          </div>
-
-          <div className="border border-slate-800 rounded-xl overflow-hidden shadow-xl bg-slate-900/50 flex-1 min-h-[400px]">
-            <div className="p-4 border-b border-slate-800 bg-slate-800/80">
-               <h3 className="text-sm font-bold text-slate-100 tracking-wide uppercase">Stock News & Alerts</h3>
-            </div>
-            <div className="h-[calc(100%-53px)]">
-               {/* @ts-ignore */}
-               <Timeline colorTheme="dark" feedMode="symbol" symbol={symbol} isTransparent displayMode="regular" height="100%" width="100%" />
             </div>
           </div>
         </div>
